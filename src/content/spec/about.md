@@ -1,9 +1,10 @@
-# About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
+# 关于
 
-::github{repo="saicaca/fuwari"}
+### 你好，我是 LunaMyth ✨
 
-> ### Sources of images used in this site
-> - [Unsplash](https://unsplash.com/)
-> - [星と少女](https://www.pixiv.net/artworks/108916539) by [Stella](https://www.pixiv.net/users/93273965)
-> - [Rabbit - v1.4 Showcase](https://civitai.com/posts/586908) by [Rabbit_YourMajesty](https://civitai.com/user/Rabbit_YourMajesty)
+欢迎来到我的数字自留地！
+
+> 想了解到我为什么要起这个名字的话，  
+> 一定要去看百合神作 [**《减法累述》**](https://www.yamibo.com/manga/171) ！
+
+*—— 关于页面还在施工中，不知道写什么，暂定这样吧*

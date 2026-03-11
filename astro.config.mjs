@@ -112,6 +112,10 @@ export default defineConfig({
 			remarkSectionize,
 			parseDirectiveNode,
 		],
+		remarkRehype: {
+      		footnoteLabel: '脚注',
+      		footnoteBackLabel: '返回正文',
+   		},
 		rehypePlugins: [
 			rehypeKatex,
 			rehypeSlug,
