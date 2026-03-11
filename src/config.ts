@@ -31,11 +31,11 @@ export const siteConfig: SiteConfig = {
     },
     favicon: [
         // 保持此数组为空以使用默认的网站图标 (favicon)
-        // {
-        //   src: '/favicon/icon.png',    // 网站图标的路径，相对于 /public 目录
+        {
+          src: '/favicon/icon.png',    // 网站图标的路径，相对于 /public 目录
         //   theme: 'light',              // (可选) 'light' 或 'dark'，仅当你有适用于亮色和暗色模式的不同图标时才设置
         //   sizes: '32x32',              // (可选) 网站图标的尺寸，仅当你拥有不同尺寸的图标时才设置
-        // }
+        }
     ],
 };
 
