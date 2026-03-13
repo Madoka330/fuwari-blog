@@ -2,7 +2,7 @@
 title: Fuwari 入门指南
 published: 2026-03-11
 description: "如何使用此博客模板"
-image: "cover.jpg"
+image: "https://img.lunamyth.love/2026/03/7c9dcb2fd79973c729ee5d8582b84743.jpg"
 tags: ["Fuwari", "Blog", "主题配置"]
 category: 指南
 draft: false

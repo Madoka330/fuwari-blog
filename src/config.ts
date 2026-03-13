@@ -17,7 +17,7 @@ export const siteConfig: SiteConfig = {
     },
     banner: {
         enable: true,
-        src: "assets/images/banner.jpg",       // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
+        src: "https://img.lunamyth.love/2026/03/71557700cb32a3f41fd98cbab02524c7.jpg",       // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
         position: "top",                       // 等同于 CSS 的 object-position 属性，仅支持 'top'、'center'、'bottom'。默认为 'center'
         credit: {
             enable: true,                      // 是否显示顶部横幅图片的版权/来源文字
@@ -32,7 +32,7 @@ export const siteConfig: SiteConfig = {
     favicon: [
         // 保持此数组为空以使用默认的网站图标 (favicon)
         {
-          src: '/favicon/icon.png',    // 网站图标的路径，相对于 /public 目录
+          src: 'https://img.lunamyth.love/2026/03/3e64cb1127e2841d273716890d2853b6.png',    // 网站图标的路径，相对于 /public 目录
         //   theme: 'light',              // (可选) 'light' 或 'dark'，仅当你有适用于亮色和暗色模式的不同图标时才设置
         //   sizes: '32x32',              // (可选) 网站图标的尺寸，仅当你拥有不同尺寸的图标时才设置
         }
@@ -53,7 +53,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-    avatar: "assets/images/avatar.jpg",          // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
+    avatar: "https://img.lunamyth.love/2026/03/d8fc0072e25eff730f5dc5526411b6d0.jpg",          // 相对于 /src 目录。如果以 '/' 开头，则相对于 /public 目录
     name: "LunaMyth",
     bio: "ACM | 百合 | 现代折纸 | 日麻",
     links: [
