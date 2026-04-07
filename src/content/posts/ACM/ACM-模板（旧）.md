@@ -8,6 +8,8 @@ category: '模板'
 draft: false 
 ---
 
+> 封面图片来源：[私を喰べたい、ひとでなし：YKK](https://x.com/ykke0866/status/2040754113135436286?s=20)
+
 # 1. 二分
 
 ## 1.1. 二分答案法
@@ -1008,12 +1010,12 @@ signed main() {
 #### 9.4.1.2. 最短路不变证明
 
 $$
-    \begin{aligned}
-    s \rightarrow t
-    &= s \rightarrow p1 \rightarrow p2  \cdots \rightarrow p_k \rightarrow  t \\
-    &= w(s,p_1) + (h_s - h_{p_1}) + w(p_1, p_2) + (h_{p_1} - h_{p_2}) + \cdots w(p_k, t) + (h_{p_k} - h_t)\\
-    &= w(s,p1) + w(p_1,p_2) + \cdots w(p_k, t) + h_s - h_t
-    \end{aligned}
+\begin{aligned}
+s \rightarrow t 
+&= s \rightarrow p_1 \rightarrow p_2 \rightarrow \dots \rightarrow p_k \rightarrow t \\
+&= w(s, p_1) + (h_s - h_{p_1}) + w(p_1, p_2) + (h_{p_1} - h_{p_2}) + \dots + w(p_k, t) + (h_{p_k} - h_t) \\
+&= w(s, p_1) + w(p_1, p_2) + \dots + w(p_k, t) + h_s - h_t
+\end{aligned}
 $$
 
 ### 9.4.2. 代码实现
@@ -2393,10 +2395,13 @@ $$
 ### 17.3.1. 证明
 
 由逆元的定义：
+
 $$
-    (i + 1)! \cdot\operatorname{inv}(i+1) \equiv 1 \pmod{p} \\
-    i! \cdot \textcolor{orange}{\operatorname{inv}(i+1) \cdot (i+1)} \equiv 1 \pmod{p} \\
-    \operatorname{inv}(i) \equiv \textcolor{orange}{\operatorname{inv}(i+1) \cdot (i + 1)}\pmod{p}
+\begin{aligned}
+    (i + 1)! \cdot \operatorname{inv}(i+1) &\equiv 1 \pmod{p} \\
+    i! \cdot \textcolor{orange}{\operatorname{inv}(i+1) \cdot (i+1)} &\equiv 1 \pmod{p} \\
+    \operatorname{inv}(i) &\equiv \textcolor{orange}{\operatorname{inv}(i+1) \cdot (i + 1)} \pmod{p}
+\end{aligned}
 $$
 
 ### 17.3.2. 代码实现
@@ -2615,40 +2620,43 @@ void solve() {
 # 18. 卡特兰数
 
 $$
-    1, 1, 2, 5, 14, 42, 132, 429, 1430, \cdots \\[8pt]
-    f(n) = \binom{2n}{n} - \binom{2n}{n-1} \\[8pt]
-    f(n) = \frac{\binom{2n}{n}}{n + 1} \\[8pt]
-    f(n) = f(n-1) \cdot \frac{4n-2}{n+ 1} \\[8pt]
-    f(n) = f(0)f(n-1) + f(1)f(n-2) + \cdots + f(n-1)f(0) = \sum_{i=0}^{n-1} f(i) \cdot f(n-1-i)
+\begin{aligned}
+    & 1, 1, 2, 5, 14, 42, 132, 429, 1430, \dots \\[8pt]
+    & f(n) = \binom{2n}{n} - \binom{2n}{n-1} \\[8pt]
+    & f(n) = \frac{\binom{2n}{n}}{n + 1} \\[8pt]
+    & f(n) = f(n-1) \cdot \frac{4n-2}{n+ 1} \\[8pt]
+    & f(n) = \sum_{i=0}^{n-1} f(i) \cdot f(n-1-i)
+\end{aligned}
 $$
 
 
 ## 18.1. 进出栈模型
 
-进栈顺序规定为 $ 1、2、3 \cdots n$，返回有多少种不同的出栈顺序，可以等价理解为任意前缀的 $ \operatorname{cnt}({左括号}) \ge \operatorname{cnt}({右括号}) $ ，例如：
+进栈顺序规定为 $1, 2, 3, \dots, n$，返回有多少种不同的出栈顺序，可以等价理解为任意前缀的 $\operatorname{cnt}(\text{左括号}) \ge \operatorname{cnt}(\text{右括号})$ ，例如：
 $$
 (~(~\textcolor{red})~\textcolor{red})~(~(~(~\textcolor{red})~\textcolor{red})~\textcolor{red})
 $$
 左括号为入栈，右括号为出栈，对应着出栈序列：
 $$
-2、1、5、4、3
+2, 1, 5, 4, 3
 $$
-全部括号组合有 $ \binom{2n}{n} $ 种可能性，我们只需要减去违规集合的数量，就是满足条件的集合数量。考虑所有由$n$个左括号和$n$个右括号组成，且存在一个位置$\operatorname{cnt}({左括号}) < \operatorname{cnt}({右括号})$的字符串，所有这样的字符串构成了集合$A$。考虑所有由$ n-1 $ 个左括号和$n + 1$个右括号组成的字符串，所有这样的字符串构成了集合$B$。现在证明：
+全部括号组合有 $\binom{2n}{n}$ 种可能性，我们只需要减去违规集合的数量，就是满足条件的集合数量。考虑所有由 $n$ 个左括号和 $n$ 个右括号组成，且存在一个位置 $\operatorname{cnt}(\text{左括号}) < \operatorname{cnt}(\text{右括号})$ 的字符串，所有这样的字符串构成了集合 $A$。考虑所有由 $n-1$ 个左括号和 $n+1$ 个右括号组成的字符串，所有这样的字符串构成了集合 $B$。现在证明：
 $$
-    |A| = |B|    
+|A| = |B|    
 $$
-考虑一种映射关系$f$，使得A中的每一个元素通过$f$可以变换得到$B$。$f$：把$A$中字符串中第一个$\operatorname{cnt}({左括号}) < \operatorname{cnt}({右括号})$ 的位置之后的所有括号翻转，所得到的新的字符串与$B$中的元素一一对应。例如：
+考虑一种映射关系 $f$，使得 $A$ 中的每一个元素通过 $f$ 可以变换得到 $B$。$f$：把 $A$ 中字符串中第一个 $\operatorname{cnt}(\text{左括号}) < \operatorname{cnt}(\text{右括号})$ 的位置之后的所有括号翻转，所得到的新的字符串与 $B$ 中的元素一一对应。例如：
 $$
-(~)~)~\textcolor{red}{(~(~(~)~)}\\
-    (~)~)~\textcolor{blue}{)~)~)~(~(}
+\begin{aligned}
+(~)~)~\textcolor{red}{(~(~(~)~)} \\
+(~)~)~\textcolor{blue}{)~)~)~(~(}
+\end{aligned}
 $$
-字符串左半部分的左括号个数为$k$，右括号个数为$k+1$，右半部分左括号个数为$n-k$，右括号个数$n-k-1$。翻转之后，右半部分左括号的个数为$n-k-1$，右括号个数$n-k$，总体$\operatorname{cnt}({左括号}) = n - 1$，$\operatorname{cnt}({右括号}) = n + 1$
+字符串左半部分的左括号个数为 $k$，右括号个数为 $k+1$，右半部分左括号个数为 $n-k$，右括号个数 $n-k-1$。翻转之后，右半部分左括号的个数为 $n-k-1$，右括号个数 $n-k$，总体 $\operatorname{cnt}(\text{左括号}) = n - 1$，$\operatorname{cnt}(\text{右括号}) = n + 1$。
 
-类似的，我们可以找到一种映射关系$g$，使得$B$中字符串通过$g$的变换得到$A$中的字符串。$g$：把$B$中字符串中第一个$\operatorname{cnt}({左括号}) < \operatorname{cnt}({右括号})$ 的位置之后的所有括号翻转，所得到的新的字符串与$A$中的元素一一对应。所以：
+类似的，我们可以找到一种映射关系 $g$，使得 $B$ 中字符串通过 $g$ 的变换得到 $A$ 中的字符串。$g$：把 $B$ 中字符串中第一个 $\operatorname{cnt}(\text{左括号}) < \operatorname{cnt}(\text{右括号})$ 的位置之后的所有括号翻转，所得到的新的字符串与 $A$ 中的元素一一对应。所以：
 $$
-|A| \le |B|\quad 且 \quad|A| \ge |B| \iff |A| = |B|
+|A| \le |B| \quad \text{且} \quad |A| \ge |B| \iff |A| = |B|
 $$
-
 
 # 19. 数论
 
@@ -2771,7 +2779,7 @@ signed main() {
 
 ## 19.3. 裴蜀定理
 
-若 $a、b$ 是整数，且 $\gcd(a, b) = d$，则一定存在整数 $x、y$满足$ax + by = d$
+若 $a, b$ 是整数，且 $\gcd(a, b) = d$，则一定存在整数 $x, y$满足$ax + by = d$
 
 ## 19.4. 拓展欧几里得定理
 
@@ -2840,7 +2848,7 @@ $$
 
 $ \phi(x) $ 表示为小于 $x$ 但与 $x$ 互质的正整数数量
 
-如 $\phi(12) = 4$，有 $1、5、7、11$ 与之互质
+如 $\phi(12) = 4$，有 $1, 5, 7, 11$ 与之互质
 
 ### 19.6.2. 性质
 
@@ -2860,7 +2868,7 @@ $ \phi(x) $ 表示为小于 $x$ 但与 $x$ 互质的正整数数量
    \phi(a) \cdot \phi(b) = \phi(ab)
    $$
 
-对于性质1，在小于 $p^{n}$ 的正整数中，不与之互质的只有 $p$的倍数：$p、2p、 3p、 \cdots、p^{n-1} \cdot p $，共 $p^{n-1}$ 个，所以 $\phi(p^n) = p^n - p^{n - 1} = p^{n-1}(p-1)$
+对于性质1，在小于 $p^{n}$ 的正整数中，不与之互质的只有 $p$的倍数：$p, 2p, 3p,  \cdots, p^{n-1} \cdot p $，共 $p^{n-1}$ 个，所以 $\phi(p^n) = p^n - p^{n - 1} = p^{n-1}(p-1)$
 
 ### 19.6.3. 单个正整数的欧拉函数值
 

@@ -8,6 +8,8 @@ category: '模板'
 draft: false 
 ---
 
+> 封面图片来源：[Z.A.T.O. ：migi_miya](https://x.com/migi_miya/status/2011344048603447786?s=20)
+
 # 1. 对拍
 
 ## 1.1. 随机数
