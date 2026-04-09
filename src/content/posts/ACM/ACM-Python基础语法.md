@@ -95,7 +95,7 @@ heapq.heappop(pq)      # pop
 
 ---
 
-## 4. 常用算法 (`<algorithm>`)
+## 4. 常用算法
 
 **`std::sort` $\rightarrow$ `list.sort()` 或 `sorted()`**
 * 降序：`a.sort(reverse=True)` （纯 C 底层实现，比用 lambda 更快）。
@@ -203,7 +203,7 @@ s = "dcba"
 s = "".join(sorted(s)) # 重新拼回字符串: "abcd"
 ```
 
-## 6. 高效格式化输出 (f-string)
+## 6. 高效格式化输出
 Python 3.6+ 引入，运行速度最快，写题调试必备。
 
 ```python
