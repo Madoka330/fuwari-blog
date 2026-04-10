@@ -10,6 +10,43 @@ draft: false
 
 > 封面图片来源：[超かぐや姫！：M-Ronan](https://x.com/Mirori_Ronan/status/2038968674896449836)
 
+## 实用工具
+
+### 随机数
+
+```cpp
+std::random_device rd;
+std::mt19937 rng(rd()); 
+
+int randint(int l, int r) {
+    return std::uniform_int_distribution<int>(l, r)(rng);
+}
+```
+### 按空格分隔字符串
+
+```cpp
+std::vector<std::string> split_space(const std::string& s) {
+    std::vector<std::string> res;
+    std::stringstream ss(s);
+    std::string token;
+    while (ss >> token) {
+        res.push_back(token);
+    }
+    return res;
+}
+```
+
+### 自定义比较器
+
+```cpp
+struct Cmp {
+    bool operator()(const pii& a, const pii& b) const {
+        if (a.first != b.first) return a.first < b.first;
+        return a.second > b.second;
+    }
+};
+```
+
 ## 前缀和与差分
 
 <img src="https://img.lunamyth.love/2026/04/1775545857.jpg" width="500px">
@@ -130,6 +167,113 @@ void get_primes(int n) {
 ```
 
 - [P3383 【模板】线性筛素数](https://www.luogu.com.cn/problem/P3383)
+
+### 快速幂
+
+```cpp
+int qpow(int a, int b, int p) {
+    int ans = 1;
+    while (b > 0) {
+        if (b & 1) ans = ans * a % p;
+        a = a * a % p;
+        b >>= 1;
+    }
+    return ans;
+}
+```
+
+[P1226 【模板】快速幂](https://www.luogu.com.cn/problem/P1226)
+
+### 矩阵快速幂
+
+```cpp
+const int mod = 1e9 + 7;
+const int N = 101;
+
+struct Matrix {
+    int m[N][N];
+    int n; // 当前矩阵的实际大小
+
+    // 构造函数：初始化全为 0
+    Matrix(int size) {
+        n = size;
+        memset(m, 0, sizeof(m));
+    }
+
+    // 初始化为单位矩阵
+    void init_E() {
+        for (int i = 1; i <= n; i++) m[i][i] = 1;
+    }
+
+    // 重载乘法运算符
+    Matrix operator*(Matrix& b) {
+        Matrix ans(n);
+        for (int i = 1; i <= n; i++) {
+            for (int k = 1; k <= n; k++) {
+                if (m[i][k] == 0) continue;
+                for (int j = 1; j <= n; j++) {
+                    ans.m[i][j] = (ans.m[i][j] + m[i][k] * b.m[k][j]) % mod;
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+Matrix qpow(Matrix a, int k) {
+    Matrix ans(a.n);
+    ans.init_E();
+    while (k > 0) {
+        if (k & 1) ans = ans * a;
+        a = a * a;
+        k >>= 1;
+    }
+    return ans;
+}
+
+void solve() {
+    int n, k; std::cin >> n >> k;
+    Matrix a(n);
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            std::cin >> a.m[i][j];
+        }
+    }
+    Matrix ans = qpow(a, k);
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            std::cout << ans.m[i][j] << " ";
+        }
+        std::cout << '\n';
+    }
+}
+```
+
+- [P3390 【模板】矩阵快速幂](https://www.luogu.com.cn/problem/P3390)
+
+### 费马小定理
+
+若 $p$ 为质数，且 $\gcd(a, p) = 1$，则有 $a^{p-1} \equiv 1 \pmod{p}$
+
+由逆元的定义，$a\operatorname{inv}(a) \equiv 1 \equiv a^{p-1} \pmod{p}$
+
+于是得到 $\operatorname{inv}(a) \equiv a^{p-2} \pmod{p}$
+
+```cpp
+int qpow(int a, int b, int p) {
+    int ans = 1;
+    while (b > 0) {
+        if (b & 1) ans = ans * a % p;
+        a = a * a % p;
+        b >>= 1;
+    }
+    return ans;
+}
+
+int inv(int a, int p) {
+    return qpow(a, p - 2, p);
+}
+```
 
 ## 前缀树
 
@@ -401,3 +545,222 @@ void solve() {
 
 ### Floyd
 
+```cpp
+const int N = 101;
+
+int d[N][N];
+
+void floyd(int n) {
+    for (int k = 1; k <= n; k++) {
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (d[i][k] != LLONG_MAX &&
+                    d[k][j] != LLONG_MAX &&
+                    d[i][k] + d[k][j] < d[i][j]) {
+                    d[i][j] = d[i][k] + d[k][j];
+                }
+            }
+        }
+    }
+}
+
+void solve() {
+    int n, m; std::cin >> n >> m;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (i != j) d[i][j] = LLONG_MAX;
+        }
+    }
+    for (int i = 0; i < m; i++) {
+        int u, v, w; std::cin >> u >> v >> w;
+        d[u][v] = std::min(d[u][v], w);
+        d[v][u] = std::min(d[v][u], w);
+    }
+    floyd(n);
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            std::cout << d[i][j] << ' ';
+        }
+        std::cout << '\n';
+    }
+}
+```
+
+## KMP
+
+```cpp
+const int N = 1e6 + 1;
+int next[N];
+
+// 模式串的 next
+void getNext(std::string& p) {
+    int m = p.size() - 1;
+    for (int i = 2, j = 0; i <= m; i++) {
+        // 不匹配 j 往回跳
+        while (j > 0 && p[i] != p[j + 1]) j = next[j];
+        // 匹配上了前缀长度增加
+        if (p[i] == p[j + 1]) j++;
+        next[i] = j;
+    }   
+}
+
+std::vector<int> kmp(std::string& s, std::string& p) {
+    int n = s.size() - 1;
+    int m = p.size() - 1;
+    getNext(p);
+    std::vector<int> pos;
+    for (int i = 1, j = 0; i <= n; i++) {
+        while (j > 0 && s[i] != p[j + 1]) j = next[j];
+        if (s[i] == p[j + 1]) j++;
+        // 匹配成功
+        if (j == m) {
+            pos.push_back(i - m + 1);
+            // 继续寻找下一个
+            j = next[j];
+        }
+    }
+    return pos;
+}
+
+void solve() {
+    std::string s, p; std::cin >> s >> p;
+    s = " " + s; p = " " + p;
+    std::vector<int> pos = kmp(s, p);
+    for (int x : pos) std::cout << x << '\n';
+    for (int i = 1; i <= p.size() - 1; i++) std::cout << next[i] << " "; std::cout << '\n';
+}
+```
+
+- [P3375 【模板】KMP](https://www.luogu.com.cn/problem/P3375)
+
+## 树状数组
+
+> 用差分实现范围修改单点查询
+
+```cpp
+const int N = 1e6 + 1;
+int tree[N];
+int n, m;
+
+int lowbit(int i) {
+    return i & -i; 
+}
+
+// i 位置增加 v
+void add(int i, int v) {
+    while (i <= n) {
+        tree[i] += v;
+        i += lowbit(i);
+    }
+}
+
+// [1, i] 位置上的累加和
+int sum(int i) {
+    int ans = 0;
+    while (i > 0) {
+        ans += tree[i];
+        i -= lowbit(i);
+    }
+    return ans;
+}
+
+int range(int l, int r) {
+    return sum(r) - sum(l - 1);
+}
+```
+
+- [P3374 【模板】树状数组 1](https://www.luogu.com.cn/problem/P3374)
+- [P3368 【模板】树状数组 2](https://www.luogu.com.cn/problem/P3368)
+
+## ST 表
+
+> Max, Min, GCD, AND, OR 都可以使用
+
+```cpp
+const int N = 1e5 + 1;
+const int LOGN = 21;
+
+int arr[N];
+int st[LOGN][N]; 
+int n, m;
+
+// st[p][i] 表示以 i 为起点，长度为 2^p 的区间内的最值
+void build() {
+    for (int i = 1; i <= n; i++) st[0][i] = arr[i];
+    int max_p = std::__lg(n);
+    for (int p = 1; p <= max_p; p++) {
+        for (int i = 1; i + (1 << p) - 1 <= n; i++) {
+            // 左半部分 [i, i + 2^(p-1) - 1]
+            // 右半部分 [i + 2^(p-1), i + 2^p - 1]
+            // for 循环的范围就是 r <= n
+            st[p][i] = std::max(st[p - 1][i], st[p - 1][i + (1 << (p - 1))]);
+        }
+    }
+}
+
+int query(int l, int r) {
+    int p = std::__lg(r - l + 1);
+    // [l, l + 2^p - 1] 和 [r - 2^p + 1, r]
+    return std::max(st[p][l], st[p][r - (1 << p) + 1]);
+}
+```
+
+- [P3865 【模板】ST 表 & RMQ 问题](https://www.luogu.com.cn/problem/P3865)
+
+## 组合数
+
+$$
+    \binom{n}{m} = \frac{n!}{m!(n-m)!}
+$$
+
+### 阶乘逆元预处理
+
+$$
+    \operatorname{inv}(i) \equiv \operatorname{inv}(i+1) \cdot (i + 1)\pmod{p}
+$$
+
+```cpp
+const int N = 1e6, mod = 1e9 + 7;
+int fac[N + 1], inv[N + 1];
+
+int qpow(int a, int b) {
+    int ans = 1;
+    while (b > 0) {
+        if (b & 1) ans = ans * a % mod;
+        a = a * a % mod;
+        b >>= 1;
+    }
+    return ans;
+}
+
+void build() {
+    fac[0] = 1;
+    for (int i = 1; i <= N; i++) fac[i] = fac[i - 1] * i % mod;
+    inv[N] = qpow(fac[N], mod - 2);
+    for (int i = N - 1; i >= 0; i--) inv[i] = inv[i + 1] * (i + 1) % mod;
+}
+
+int C(int n, int m) {
+    if (m < 0 || m > n) return 0;
+    return fac[n] * inv[n - m] % mod * inv[m] % mod;
+}
+```
+
+### 卢卡斯定理
+
+对于素数 $ p $，有
+$$
+    \binom{n}{m} \equiv \binom{n \bmod p}{m \bmod p} \binom{\left\lfloor \frac{n}{p} \right\rfloor}{\left\lfloor \frac{m}{p} \right\rfloor} \pmod p
+$$
+其中，当 $ m > n $ 时，$ \binom{n}{m} $ = 0
+
+> 注意 build 构建的范围是 $[0, p - 1]$
+
+```cpp
+int lucas(int n, int m, int p) {
+    if (n < p && m < p) return C(n, m, p);
+    return C(n % p, m % p, p) * lucas(n / p, m / p, p) % p;
+}
+```
+
+- [P3807 【模板】卢卡斯定理 / Lucas 定理](https://www.luogu.com.cn/problem/P3807)
