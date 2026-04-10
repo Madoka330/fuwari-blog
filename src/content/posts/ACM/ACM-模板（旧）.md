@@ -1146,7 +1146,7 @@ signed main() {
 
 <img src="https://img.lunamyth.love/2026/04/1775545860.png">
 
-### 10.1.1. 角度与弧度的转换
+## 10.1.1. 角度与弧度的转换
 
 ```cpp
 const double PI = acos(-1.0); 
@@ -1154,7 +1154,7 @@ double deg_to_rad(double deg) { return deg * PI / 180.0; }
 double rad_to_deg(double rad) { return rad * 180.0 / PI; }
 ```
 
-### 10.1.2. 旋转一个点(绕原点逆时针旋转 θ 弧度)
+## 10.1.2. 旋转一个点(绕原点逆时针旋转 θ 弧度)
 
 ```cpp
 Point rotate(Point p, double theta) {
@@ -1165,7 +1165,7 @@ Point rotate(Point p, double theta) {
 }
 ```
 
-### 10.1.3. 绕任意点旋转
+## 10.1.3. 绕任意点旋转
 
 ```cpp
 Point rotate(Point p, Point center, double theta) {
@@ -1178,7 +1178,7 @@ Point rotate(Point p, Point center, double theta) {
 ```
 
 
-### 10.1.4. 判断凹凸性
+## 10.1.4. 判断凹凸性
 
 ```cpp
 #include <bits/stdc++.h>
