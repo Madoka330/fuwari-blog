@@ -1,6 +1,7 @@
 ---
 title: ACM-Python基础语法
 published: 2026-04-08
+updated: 2026-04-11
 description: '基于 Gemini 的适用于算法竞赛的 Python 语法整理'
 image: 'https://img.lunamyth.love/2026/04/1775658217.jpg'
 tags: [Python, ACM]
@@ -194,7 +195,7 @@ lst = list(s)       # "abc" -> ['a', 'b', 'c']
 lst[1] = 'x'        # ['a', 'x', 'c']
 s = "".join(lst)    # "axc"
 ```
-
+p
 ### 字符串排序
 Python 的字符串没有自带的 `.sort()` 方法。
 ```python
@@ -212,4 +213,126 @@ pi = 3.14159
 print(f"Result: {ans}")        # 基础变量替换
 print(f"{ans:05d}")            # 补零占位，输出: 00123 
 print(f"{pi:.2f}")             # 保留两位小数，输出: 3.14
+```
+
+# 代码示例
+
+## Python 模板
+
+```py
+import sys
+import math
+import heapq
+from random import randint
+from functools import cmp_to_key
+from collections import defaultdict, deque
+from itertools import permutations, combinations
+
+input = sys.stdin.readline
+sys.setrecursionlimit(10**7)
+
+def I(): return input().strip()
+def II(): return int(I())
+def MII(): return map(int, I().split())
+def LII(): return list(MII())
+
+def solve():
+	for line in sys.stdin:
+		print(line)
+	pass
+
+if __name__ == "__main__":
+    T = 1
+    # T = II()
+    for _ in range(T):
+        solve()
+```
+
+## set
+
+```py
+def solve():
+    n = II()
+    ans = sorted(set(MII()))
+    print(len(ans))
+    print(*ans)
+```
+
+## dict
+
+```py
+from collections import defaultdict
+
+def solve():
+    n = II()
+    cnt = defaultdict(int)
+    for _ in range(n):
+        x = II()
+        cnt[x] += 1
+    ans = sorted(cnt.keys())
+    outs = [f"{k} {cnt[k]}" for k in ans]
+    print("\n".join(outs))
+```
+
+## dijkstra
+
+```py
+import heapq
+N = 10**5 + 1
+inf = 10**18
+d = [inf for _ in range(N)]
+vis = [False for _ in range(N)]
+g = [[] for _ in range(N)]
+
+def dijkstra(s):
+    heap = [(0, s)]
+    d[s] = 0
+    while (heap):
+        u = heapq.heappop(heap)[1]
+        if vis[u]: continue
+        vis[u] = True
+        for v, w in g[u]:
+            if not vis[v] and d[u] + w < d[v]:
+                d[v] = d[u] + w
+                heapq.heappush(heap, (d[v], v))
+
+def solve():
+    n, m, s = MII()
+    for _ in range(m):
+        u, v, w = MII()
+        g[u].append((v, w))
+    dijkstra(s)
+    print(*d[1:n+1])
+```
+
+## combinations
+
+```py
+from itertools import combinations
+
+def solve():
+    n, k = MII()
+    arr = range(1, n + 1)
+    ans = []
+    for p in combinations(arr, k):
+        line = [f"{x:3}" for x in p]
+        ans.append("".join(line))
+    print("\n".join(ans))
+```
+
+## permutations
+
+```py
+from itertools import permutations
+
+def solve():
+    n = II()
+    arr = range(1, n + 1)
+    ans = []
+    for p in permutations(arr):
+        s = []
+        for x in p:
+            s.append(f"{x:5}")
+        ans.append("".join(s))
+    print("\n".join(ans))
 ```
