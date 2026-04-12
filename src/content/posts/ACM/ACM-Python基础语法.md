@@ -195,7 +195,7 @@ lst = list(s)       # "abc" -> ['a', 'b', 'c']
 lst[1] = 'x'        # ['a', 'x', 'c']
 s = "".join(lst)    # "axc"
 ```
-p
+
 ### 字符串排序
 Python 的字符串没有自带的 `.sort()` 方法。
 ```python
