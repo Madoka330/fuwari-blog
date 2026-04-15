@@ -1,6 +1,7 @@
 ---
 title: Windows 链接指南：快捷方式、硬链接、目录联接与符号链接
 published: 2026-04-14
+updated: 2026-04-15
 description: '介绍各种链接的使用方法'
 image: 'https://img.lunamyth.love/2026/04/1776102725-艾希.jpg'
 tags: [CMD, Windows]
@@ -116,6 +117,56 @@ mklink /J "C:\Users\25322\AppData\Local\Google\Chrome" "D:\Cache\Chrome"
 
 同样的，我们也可以用 `mklink /D "新入口路径" "真实目标路径"` 创建文件夹符号链接，效果和目录联接差不多。
 
+## 添加创建链接到右键菜单
+
+使用 [Link Shell Extension](https://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html)，它会把创建链接集成到鼠标右键菜单里面，不用记忆命令行就能实现轻松创建链接。
+
+### 安装
+
+确保你的电脑里面已经安装了必要的 `runtime dlls`，然后下载 `Link Shell Extension` 安装程序根据指引安装即可。
+
+![](https://img.lunamyth.love/2026/04/1776216456-安装页面.jpg)
+
+### 演示
+
+我们下面演示如何使用 Link Shell Extension 完成用户开始菜单和公共开始菜单的转移。最终我们会把它们放在 `D:\StartMenu\User` 和 `D:\StartMenu\Public` 里面，简化开始菜单管理。
+
+1. 进行用户开始菜单的转移，进入 `%AppData%\Microsoft\Windows\Start Menu`（对应绝对路径  `C:\Users\25322\AppData\Roaming\Microsoft\Windows\Start Menu`）中，把 `Programs` 里面的所有文件移动到 `D:\StartMenu\User` 中。
+
+![](https://img.lunamyth.love/2026/04/1776216504-用户-移动.jpg)
+
+![](https://img.lunamyth.love/2026/04/1776216492-用户-快捷方式.jpg)
+
+2. 右键 `User`，找到 `选择源连接点`
+
+![](https://img.lunamyth.love/2026/04/1776216500-用户-选择源连接点.jpg)
+
+3. 回到用户开始菜单位置，确保原 ·、`Programs` 文件夹里的所有文件都已成功剪切到 D 盘后，删除原有的 `Programs` 文件夹。右键当前目录，创建为 `目录链接点`
+
+![](https://img.lunamyth.love/2026/04/1776216496-用户-目录连接点.jpg)
+
+4. 生成了一个带有快捷方式小箭头图标的文件夹，名字为 `User`，将其更名为 `Programs`
+
+![](https://img.lunamyth.love/2026/04/1776216488-用户-更名.jpg)
+
+5. 对于公共的 `C:\ProgramData\Microsoft\Windows\Start Menu` 的转移也是同理，不过需要注意权限问题。
+
+![](https://img.lunamyth.love/2026/04/1776232944-公共-用户菜单.jpg)
+
+6. 当我们完成转移之后，可能需要重启一下资源管理器或者电脑。可以发现开始菜单的应用图标都还在，也能正常通过这些图标跳转到对应应用程序。
+
+![](https://img.lunamyth.love/2026/04/1776216479-所有图标都在.jpg)
+
+7. 我们尝试新增一个快捷方式到 `D:\StartMenu\User` 中，发现可以使用搜索轻松查找到对应的程序。
+
+![](https://img.lunamyth.love/2026/04/1776216483-新增一个快捷方式.jpg)
+
+![](https://img.lunamyth.love/2026/04/1776216462-成功找到快捷方式.jpg)
+
+8. 在搜索界面右键打开文件位置，会发现这个位置定位到了用户开始菜单的默认位置。至此，成功实现之前需要命令行才能做到的目录联接。
+
+![](https://img.lunamyth.love/2026/04/1776216467-定位到C盘.jpg)
+
 ## 总结
 
 ### 不同链接方式对比
@@ -133,3 +184,7 @@ mklink /J "C:\Users\25322\AppData\Local\Google\Chrome" "D:\Cache\Chrome"
 * **创建目录联接**：`mklink /J "新入口路径" "真实目标路径"`
 * **创建文件符号链接**：`mklink "新入口路径" "真实目标路径"`
 * **创建文件夹符号链接**：`mklink /D "新入口路径" "真实目标路径"`
+
+### 图形化界面
+
+[Link Shell Extension](https://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html)
