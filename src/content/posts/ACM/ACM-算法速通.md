@@ -1,6 +1,7 @@
 ---
 title: ACM-算法速通
 published: 2026-04-10
+updated: 2026-04-18
 description: '板子题'
 image: 'https://img.lunamyth.love/2026/04/1775787478.jpg'
 tags: [C++, ACM]
@@ -586,6 +587,50 @@ void solve() {
 }
 ```
 
+### SPFA
+
+```cpp
+const int N = 2e3 + 1;
+using pii = std::pair<int, int>;
+
+std::vector<pii> g[N];
+int cnt[N];   
+int d[N];
+bool vis[N];  // 在队列里面为 true，出队列为 false
+
+void clear(int n) {
+    for (int i = 1; i <= n; i++) {
+        g[i].clear();
+        cnt[i] = 0;
+        d[i] = LLONG_MAX;
+        vis[i] = false;
+    }
+}
+ 
+bool spfa(int n) {
+    std::queue<int> q;
+    d[1] = 0; q.push(1);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        vis[u] = false;
+        for (auto [v, w] : g[u]) {
+            if (d[u] + w < d[v]) {
+                d[v] = d[u] + w;
+                if (!vis[v]) {
+                    cnt[v]++;
+                    vis[v] = true;
+                    q.push(v);
+                    if (cnt[v] >= n) return true; // 有负环
+                }
+            }
+        }
+    }
+    return false;
+}
+```
+
+- [P3385 【模板】负环](https://www.luogu.com.cn/problem/P3385)
+
 ## KMP
 
 ```cpp
@@ -706,6 +751,197 @@ int query(int l, int r) {
 ```
 
 - [P3865 【模板】ST 表 & RMQ 问题](https://www.luogu.com.cn/problem/P3865)
+
+## LCA
+
+> `fa[大][小]`，lca 还可以维护两点之间的最短距离和最大边权（注意要先更新再跳转）
+
+$$ 
+dis(u, v) = deep[u] + deep[v] - 2 * deep[lca(u, v)] 
+$$
+
+$$
+dis(u, v) = pre[u] + pre[v] - 2 * pre[lca(u, v)]
+$$
+
+$$
+dis(u, v) = dis(u, X) + dis(X, v)
+$$
+
+$$
+lca(a, b, c) = lca(lca(a, b), c)
+$$
+
+- 点差分
+```cpp
+diff[u]++;
+diff[v]++;
+diff[lca]--;
+diff[fa[lca][0]]--;
+```
+
+- 边差分
+```cpp
+diff[u]++;
+diff[v]++;
+diff[lca] -= 2;
+```
+
+- 差分累加还原
+```cpp
+int diff[N];
+int cnt[N];
+
+void get_cnt(int u, int parent) {
+    cnt[u] = diff[u];
+    for (int v : g[u]) {
+        if (v != parent) {
+            get_cnt(v, u);
+            cnt[u] += cnt[v];
+        }
+    }
+}
+```
+
+```cpp
+const int N = 5e5 + 1;
+const int LOGN = 21;
+
+std::vector<int> g[N];
+int deep[N];
+// fa[u][p] 表示 u 向上跳 2^p 层会到达的节点
+int fa[N][LOGN];
+// max_p = std::__lg(n); 
+int max_p;   
+
+// max_w[u][p] 表示 u 向上跳 2^p 层，沿途的最大边权
+// int max_w[N][LOGN]; 
+
+// pre[i] 表示从根节点到 i 节点的路径长
+// int pre[N];
+
+// u 是当前节点，parent 是它的直接父亲
+void dfs(int u, int parent) {
+    deep[u] = deep[parent] + 1;
+    fa[u][0] = parent;
+
+    // max_w[u][0] = w;
+    // pre[u] = pre[parent] + w
+
+    for (int p = 1; p <= max_p; p++) {
+        // u 向上 2^p <==> u 向上 2^(p-1)，再从新位置再向上 2^(p-1)
+        fa[u][p] = fa[fa[u][p - 1]][p - 1];
+
+        // max_w[u][p] = std::max(max_w[u][p - 1], max_w[fa[u][p - 1]][p - 1]);
+        
+    }
+    for (int v : g[u]) {
+        if (v != parent) dfs(v, u);
+    }
+}
+
+int lca(int a, int b) {
+
+    // int ans = 0;
+
+    if (deep[a] < deep[b]) std::swap(a, b);
+
+    // 使得 a, b 到达同一高度
+    for (int p = max_p; p >= 0; p--) {
+        if (deep[fa[a][p]] >= deep[b]) {
+
+            // ans = std::max(ans, max_w[a][p]);
+
+            a = fa[a][p];
+        }
+    }
+    if (a == b) return a;
+    for (int p = max_p; p >= 0; p--) {
+        if (fa[a][p] != fa[b][p]) {
+
+            // ans = std::max({ans, max_w[a][p], max_w[b][p]});
+
+            a = fa[a][p];
+            b = fa[b][p];
+
+        }
+    }
+
+    // ans = std::max({ans, max_w[a][0], max_w[b][0]});
+
+    return fa[a][0];
+}
+```
+
+- [P3379 【模板】最近公共祖先（LCA）](https://www.luogu.com.cn/problem/P3379)
+
+## 线段树
+
+```cpp
+const int N = 1e5 + 1;
+
+int arr[N];
+
+struct Node {
+    int l, r;
+    int sum, add;
+} tr[N << 2];
+
+void up(int i) {
+    tr[i].sum = tr[i << 1].sum + tr[i << 1 | 1].sum;
+}
+
+void build(int l, int r, int i) {
+    tr[i] = {l, r, 0, 0}; 
+    if (l == r) {
+        tr[i].sum = arr[l];
+        return;
+    }
+    int mid = (l + r) >> 1; 
+    build(l, mid, i << 1);
+    build(mid + 1, r, i << 1 | 1);
+    up(i);
+}
+
+void lazy(int i, int v) {
+    tr[i].sum += (tr[i].r - tr[i].l + 1) * v;
+    tr[i].add += v;
+}
+
+void down(int i) {
+    if (tr[i].add != 0) {
+        lazy(i << 1, tr[i].add);
+        lazy(i << 1 | 1, tr[i].add);
+        tr[i].add = 0;
+    }
+}
+
+void modify(int jobl, int jobr, int jobv, int i) {
+    if (jobl <= tr[i].l && tr[i].r <= jobr) {
+        lazy(i, jobv);
+        return;
+    }
+    down(i);
+    int mid = (tr[i].l + tr[i].r) >> 1;
+    if (jobl <= mid) modify(jobl, jobr, jobv, i << 1);
+    if (jobr > mid)  modify(jobl, jobr, jobv, i << 1 | 1);
+    up(i);
+}
+
+int query(int jobl, int jobr, int i) {
+    if (jobl <= tr[i].l && tr[i].r <= jobr) {
+        return tr[i].sum;
+    }
+    down(i);
+    int mid = (tr[i].l + tr[i].r) >> 1;
+    int ans = 0;
+    if (jobl <= mid) ans += query(jobl, jobr, i << 1);
+    if (jobr > mid)  ans += query(jobl, jobr, i << 1 | 1);
+    return ans;
+}
+```
+
+- [P3372 【模板】线段树 1](https://www.luogu.com.cn/problem/P3372)
 
 ## 组合数
 
