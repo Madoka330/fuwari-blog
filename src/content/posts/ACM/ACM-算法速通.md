@@ -501,6 +501,49 @@ void solve() {
 - [B3644 【模板】拓扑排序 / 家谱树](https://www.luogu.com.cn/problem/B3644)
 - [P1807 最长路](https://www.luogu.com.cn/problem/P1807)
 
+## 树
+
+### 树的遍历
+
+> pos 初始化为顶点位置
+
+```cpp
+const int N = 1e5 + 1;
+int in[N], post[N], l[N], r[N];
+int pos[N];
+
+int build(int il, int ir, int pl, int pr) {
+    if (il > ir) return 0;
+    int root = post[pr];
+    int k = pos[root];
+    int len = k - il;
+    l[root] = build(il, k - 1, pl, pl + len - 1);
+    r[root] = build(k + 1, ir, pl + len, pr - 1);
+    return root;
+}
+
+// 先序遍历
+void pre(int root) {
+    if (!root) return;
+    std::cout << root << " ";
+    pre(l[root]);
+    pre(r[root]);
+}
+
+// 层序遍历
+void bfs(int root) {
+    std::queue<int> q; q.push(root);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        std::cout << u << " ";
+        if (l[u]) q.push(l[u]);
+        if (r[u]) q.push(r[u]);
+    }
+}
+```
+
+- [P1030 [NOIP 2001 普及组] 求先序排列](https://www.luogu.com.cn/problem/P1030)
+
 
 ## 最短路
 
