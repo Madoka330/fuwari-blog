@@ -50,7 +50,9 @@ struct Cmp {
 
 ## 前缀和与差分
 
-<img src="https://img.lunamyth.love/2026/04/1775545857.jpg" width="500px">
+<div align="center">
+    <img src="https://img.lunamyth.love/2026/04/1776525722-二维矩阵.svg" width="70%" />
+</div>
 
 ### 前缀和
 
@@ -817,17 +819,17 @@ $$
 
 - 点差分
 ```cpp
-diff[u]++;
-diff[v]++;
-diff[lca]--;
-diff[fa[lca][0]]--;
+diff[u] += w;
+diff[v] += w;
+diff[lca] -= w;
+diff[fa[lca][0]] -= w;
 ```
 
 - 边差分
 ```cpp
-diff[u]++;
-diff[v]++;
-diff[lca] -= 2;
+diff[u] += w;
+diff[v] += w;
+diff[lca] -= 2 * w;
 ```
 
 - 差分累加还原
