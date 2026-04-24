@@ -30,9 +30,7 @@ std::vector<std::string> split_space(const std::string& s) {
     std::vector<std::string> res;
     std::stringstream ss(s);
     std::string token;
-    while (ss >> token) {
-        res.push_back(token);
-    }
+    while (ss >> token) res.push_back(token);
     return res;
 }
 ```
@@ -48,6 +46,42 @@ struct Cmp {
 };
 ```
 
+## 二分
+
+### STL 写法
+
+```cpp
+int first_ge(vector<int>& arr, int key) {
+    auto it = std::lower_bound(arr.begin() + 1, arr.end(), key);
+    if (it == arr.end()) return -1;
+    return it - arr.begin();
+}
+```
+
+```cpp
+int first_gt(vector<int>& arr, int key) {
+    auto it = std::upper_bound(arr.begin() + 1, arr.end(), key);
+    if (it == arr.end()) return -1;
+    return it - arr.begin();
+}
+```
+
+```cpp
+int last_lt(vector<int>& arr, int key) {
+    auto it = std::lower_bound(arr.begin() + 1, arr.end(), key);
+    int pos = (it - arr.begin()) - 1;  
+    return pos >= 1 ? pos : -1;
+}
+```
+
+```cpp
+int last_le(vector<int>& arr, int key) {
+    auto it = std::upper_bound(arr.begin() + 1, arr.end(), key);
+    int pos = (it - arr.begin()) - 1;
+    return pos >= 1 ? pos : -1;
+}
+```
+
 ## 前缀和与差分
 
 <div align="center">
@@ -56,26 +90,33 @@ struct Cmp {
 
 ### 前缀和
 
+- 一维前缀和
+
 ```cpp
-// 一维前缀和
 sum[i] = sum[i - 1] + arr[i]; 
 // [l, r]
 int ans = sum[r] - sum[l - 1];  
 ```
 
+- 二维前缀和
+
 ```cpp
-// 二维前缀和
 sum[i][j] = sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1] + arr[i][j];
 // (x1, y1) -> (x2, y2)
 int ans = sum[x2][y2] - sum[x2][y1 - 1] - sum[x1 - 1][y2] + sum[x1 - 1][y1 - 1];
 ```
 
+- 广义前缀和
+
+    维护前缀异或和：`pre[i] = pre[i - 1] ^ a[i]`，`pre[r] ^ pre[l - 1]`
+    维护前缀乘积：`pre[i] = pre[i - 1] * a[i] % mod`, `pre[r] * inv(pre[l - 1]) % mod`
+
 - [P1719 最大加权矩形](https://www.luogu.com.cn/problem/P1719)
 
 ### 差分
 
+- 一维差分
 ```cpp
-// 一维差分
 diff[i] = arr[i] - arr[i - 1];
 // [l, r] + x
 diff[l] += x;
@@ -84,8 +125,8 @@ diff[r + 1] -= x;
 diff[i] += diff[i - 1]; 
 ```
 
+- 二维差分
 ```cpp
-// 二维差分
 diff[i][j] = arr[i][j] - arr[i - 1][j] - arr[i][j - 1] + arr[i - 1][j - 1];
 // (x1, y1) -> (x2, y2) + x
 diff[x1][y1] += x;
@@ -96,7 +137,54 @@ diff[x2 + 1][y2 + 1] += x;
 diff[i][j] += diff[i - 1][j] + diff[i][j - 1] - diff[i - 1][j - 1];
 ```
 
+- 离散化
+
+```cpp
+struct Node {
+    int l, r, v;
+};
+
+void solve() {
+    int n; std::cin >> n;
+    std::vector<Node> ops(n + 1);
+    std::vector<int> pos;
+    for (int i = 1; i <= n; i++) {
+        int l, r; std::cin >> l >> r; 
+        ops[i] = {l, r, 1};   // [l, r)
+        pos.push_back(l);  
+        pos.push_back(r);
+    }
+    std::sort(pos.begin(), pos.end());
+    pos.erase(std::unique(pos.begin(), pos.end()), pos.end());
+
+    auto find = [&](int x) {
+        return std::lower_bound(pos.begin(), pos.end(), x) - pos.begin() + 1; 
+    };
+
+    // 第 i 个点代表的范围是 [pos[i - 1], pos[i])
+    int m = pos.size();
+    std::vector<int> diff(m + 2);
+
+    for (int i = 1; i <= n; i++) {
+        int l = find(ops[i].l);
+        int r = find(ops[i].r);
+        diff[l] += ops[i].v;
+        diff[r] -= ops[i].v;
+    }
+    
+    int ans = 0;
+    int sum = 0;
+    for (int i = 1; i < m; i++) {
+        sum += diff[i];
+        if (sum > 0) ans += pos[i] - pos[i - 1];
+    }
+    std::cout << ans << '\n';
+}
+```
+
 - [P3397 地毯](https://www.luogu.com.cn/problem/P3397)
+
+- [P1496 火烧赤壁](https://www.luogu.com.cn/problem/P1496)
 
 ## 单调栈
 
@@ -587,6 +675,97 @@ void solve() {
 }
 ```
 
+- 最短路计数
+
+```cpp
+cnt[s] = 1;
+for (auto [v, w] : g[u]) {
+    if (d[u] + w < d[v]) {
+        d[v] = d[u] + w;
+        cnt[v] = cnt[u]; 
+        heap.push({d[v], v});
+    } else if (d[u] + w == d[v]) {
+        cnt[v] = (cnt[v] + cnt[u]) % MOD; 
+    }
+}
+```
+
+- 多关键字
+
+```cpp
+struct Node {
+    int v;
+    int w;     // 距离 (越小越好)
+    int cost;  // 花费 (越小越好)
+    int score; // 评分 (越大越好)
+};
+
+using a3 = std::array<int, 3>;
+std::vector<Node> g[N];
+using State = std::pair<a3, int>; // {{距离, 花费, -评分}, 节点}
+a3 d[N];      
+bool vis[N];  
+
+void dijkstra(int s) {
+    std::priority_queue<State, std::vector<State>, std::greater<State>> heap;
+    d[s] = {0, 0, 0}; 
+    heap.push({{0, 0, 0}, s});
+    while (!heap.empty()) {
+        int u = heap.top().second; heap.pop();
+        if (vis[u]) continue;
+        vis[u] = true;
+        for (const auto& [v, w, cost, score] : g[u]) {
+            a3 new_d = {
+                d[u][0] + w,
+                d[u][1] + cost,
+                d[u][2] - score 
+            };
+            if (new_d < d[v]) {
+                d[v] = new_d;
+                heap.push({d[v], v});
+            }
+        }
+    }
+}
+```
+
+- 分层图
+
+```cpp
+// d[u][j] 走到点 u，且使用了 j 次超能力 
+// vis[u][j]
+for (auto [v, w] : g[u]) {
+    if (d[u][j] + w < d[v][j]) {
+        d[v][j] = d[u][j] + w;
+        heap.push({d[v][j], {v, j}});
+    }
+    // 使用超能力（假设超能力是“这条边免费，权值为0”）
+    if (j < max_k && d[u][j] + 0 < d[v][j + 1]) {
+        d[v][j + 1] = d[u][j] + 0; 
+        heap.push({d[v][j + 1], {v, j + 1}});
+    }
+}
+```
+
+- 次短路
+  
+```cpp
+// 没有 vis
+if (dist > d2[u]) continue;
+for (auto [v, w] : g[u]) {
+    int new_d = dist + w;
+    if (new_d < d1[v]) {
+        d2[v] = d1[v]; 
+        d1[v] = new_d; 
+        heap.push({d1[v], v});
+        if (d2[v] != inf) heap.push({d2[v], v});
+    } else if (new_d > d1[v] && new_d < d2[v]) {
+        d2[v] = new_d; 
+        heap.push({d2[v], v});
+    }
+}
+```
+
 - [P4779 【模板】单源最短路径（标准版）](https://www.luogu.com.cn/problem/P4779)
 
 ### Floyd
@@ -799,8 +978,6 @@ int query(int l, int r) {
 
 ## LCA
 
-> `fa[大][小]`，lca 还可以维护两点之间的最短距离和最大边权（注意要先更新再跳转）
-
 $$ 
 dis(u, v) = deep[u] + deep[v] - 2 * deep[lca(u, v)] 
 $$
@@ -817,36 +994,7 @@ $$
 lca(a, b, c) = lca(lca(a, b), c)
 $$
 
-- 点差分
-```cpp
-diff[u] += w;
-diff[v] += w;
-diff[lca] -= w;
-diff[fa[lca][0]] -= w;
-```
-
-- 边差分
-```cpp
-diff[u] += w;
-diff[v] += w;
-diff[lca] -= 2 * w;
-```
-
-- 差分累加还原
-```cpp
-int diff[N];
-int cnt[N];
-
-void get_cnt(int u, int parent) {
-    cnt[u] = diff[u];
-    for (int v : g[u]) {
-        if (v != parent) {
-            get_cnt(v, u);
-            cnt[u] += cnt[v];
-        }
-    }
-}
-```
+> `fa[大][小]`，LCA 还可以维护两点之间的最短距离和最大边权（注意要先更新再跳转）
 
 ```cpp
 const int N = 5e5 + 1;
@@ -918,9 +1066,42 @@ int lca(int a, int b) {
 }
 ```
 
+- 点差分
+```cpp
+diff[u] += w;
+diff[v] += w;
+diff[lca] -= w;
+diff[fa[lca][0]] -= w;
+```
+
+- 边差分
+```cpp
+diff[u] += w;
+diff[v] += w;
+diff[lca] -= 2 * w;
+```
+
+- 差分累加还原
+```cpp
+int diff[N];
+int cnt[N];
+
+void get_cnt(int u, int parent) {
+    cnt[u] = diff[u];
+    for (int v : g[u]) {
+        if (v != parent) {
+            get_cnt(v, u);
+            cnt[u] += cnt[v];
+        }
+    }
+}
+```
+
 - [P3379 【模板】最近公共祖先（LCA）](https://www.luogu.com.cn/problem/P3379)
 
 ## 线段树
+
+> 如果是单点修改，不需要 lazy 和 down
 
 ```cpp
 const int N = 1e5 + 1;
@@ -929,10 +1110,13 @@ int arr[N];
 
 struct Node {
     int l, r;
-    int sum, add;
+    int sum;
+    // int max_v
+    int add;
 } tr[N << 2];
 
 void up(int i) {
+    // tr[i].max_v = std::max(tr[i << 1].max_v, tr[i << 1 | 1].max_v);
     tr[i].sum = tr[i << 1].sum + tr[i << 1 | 1].sum;
 }
 
@@ -948,7 +1132,9 @@ void build(int l, int r, int i) {
     up(i);
 }
 
+
 void lazy(int i, int v) {
+    // tr[i].max_v += v;
     tr[i].sum += (tr[i].r - tr[i].l + 1) * v;
     tr[i].add += v;
 }
@@ -979,10 +1165,42 @@ int query(int jobl, int jobr, int i) {
     }
     down(i);
     int mid = (tr[i].l + tr[i].r) >> 1;
+/*
+    int ans = LLONG_MIN; 
+    if (jobl <= mid) ans = std::max(ans, query(jobl, jobr, i << 1));
+    if (jobr > mid)  ans = std::max(ans, query(jobl, jobr, i << 1 | 1));
+*/
     int ans = 0;
     if (jobl <= mid) ans += query(jobl, jobr, i << 1);
     if (jobr > mid)  ans += query(jobl, jobr, i << 1 | 1);
     return ans;
+}
+```
+
+- 区间内有多少个 0（或者多少个奇数，正数）
+
+在 `build` 时遇到目标数字记为 1，其他数字记为 0，把问题退化为求区间和
+
+- 状态翻转
+
+```cpp
+void lazy(int i) {
+    tr[i].sum = (tr[i].r - tr[i].l + 1) - tr[i].sum;
+    tr[i].flip_tag ^= 1; 
+}
+```
+
+- 区间重置
+
+如果同时存在区间重置和区间增加的懒信息，先重置，再增加
+
+- 线性变化
+
+```cpp
+void lazy(int i, int job_mul, int job_add) {
+    tr[i].sum = (tr[i].sum * job_mul) + (tr[i].r - tr[i].l + 1) * job_add;
+    tr[i].mul = tr[i].mul * job_mul;
+    tr[i].add = tr[i].add * job_mul + job_add;
 }
 ```
 
@@ -1045,3 +1263,107 @@ int lucas(int n, int m, int p) {
 ```
 
 - [P3807 【模板】卢卡斯定理 / Lucas 定理](https://www.luogu.com.cn/problem/P3807)
+
+### 数学公式附录
+
+#### 1. 基础定义与性质
+
+- **定义式**
+  $$\binom{n}{k} = C_n^k = \frac{n!}{k!(n-k)!}$$
+
+- **基本性质**
+
+  1. **对称性**：
+     $$\binom{n}{k} = \binom{n}{n-k}$$
+  2. **递推式**：
+     $$\binom{n}{k} = \binom{n-1}{k} + \binom{n-1}{k-1}$$
+
+---
+
+#### 2. 核心求和公式
+
+- **二项式定理**
+
+$$(x+y)^n = \sum_{k=0}^n \binom{n}{k} x^k y^{n-k}$$
+
+- **特殊求和（由二项式定理推导）**
+
+  1. **所有组合数之和**：
+     $$\sum_{k=0}^n \binom{n}{k} = 2^n$$
+  2. **奇偶项平分**：
+     $$\sum_{k \text{ is even}} \binom{n}{k} = \sum_{k \text{ is odd}} \binom{n}{k} = 2^{n-1}$$
+  3. **加权求和（吸收公式应用）**：
+     $$\sum_{k=0}^n k \binom{n}{k} = n 2^{n-1}$$
+
+- **朱世杰恒等式（曲棍球棒公式）**
+
+    *在杨辉三角中表现为一条斜线上的数之和等于下一行拐角处的数。*
+    $$\sum_{i=r}^n \binom{i}{r} = \binom{n+1}{r+1}$$
+
+---
+
+#### 3. 进阶恒等式
+
+- **范德蒙德卷积**
+
+    从两堆（$n$ 个和 $m$ 个）物体中总共选出 $k$ 个。
+    $$\sum_{i=0}^k \binom{n}{i} \binom{m}{k-i} = \binom{n+m}{k}$$
+
+- **吸收公式**
+
+    *常用于消去组合数前面的变量 $k$。*
+    $$\binom{n}{k} = \frac{n}{k} \binom{n-1}{k-1}$$
+
+---
+
+#### 4. 计数模型
+
+- **插板法**
+
+    将 $n$ 个**相同**物品分给 $m$ 个**不同**的箱子：
+    1. **每个箱子至少分 1 个**：
+    $$\binom{n-1}{m-1}$$
+    2. **每个箱子可以为空**：
+    *转化为将 $n+m$ 个物品分给 $m$ 个箱子且不为空的情况。*
+    $$\binom{n+m-1}{m-1}$$
+
+- **容斥原理**
+
+$$|A_1 \cup A_2 \cup \dots \cup A_n| = \sum |A_i| - \sum |A_i \cap A_j| + \sum |A_i \cap A_j \cap A_k| - \dots$$
+
+---
+
+#### 5. 特殊数列
+
+- **卡特兰数 (Catalan Number)**
+
+    **常见应用**：
+    1. **括号匹配**：$n$ 对括号的合法匹配序列数。
+    2. **二叉树**：$n$ 个节点的二叉树形态数。
+    3. **路径计数**：从 $(0,0)$ 走到 $(n,n)$ 且不穿过 $y=x$ 的路径数。
+    $$H_n = \frac{1}{n+1} \binom{2n}{n} = \binom{2n}{n} - \binom{2n}{n-1}$$
+
+- **第一类斯特林数**
+
+    表示将 $n$ 个不同元素构成 $k$ 个圆排列的方案数。
+    $$\begin{bmatrix} n \\ k \end{bmatrix} = (n-1) \begin{bmatrix} n-1 \\ k \end{bmatrix} + \begin{bmatrix} n-1 \\ k-1 \end{bmatrix}$$
+
+- **第二类斯特林数**
+
+    表示将 $n$ 个不同元素划分到 $k$ 个非空集合的方案数。
+    $$\begin{Bmatrix} n \\ k \end{Bmatrix} = k \begin{Bmatrix} n-1 \\ k \end{Bmatrix} + \begin{Bmatrix} n-1 \\ k-1 \end{Bmatrix}$$
+
+- **多重集排列**
+
+    当元素中有重复项时的全排列。假设共有 $n$ 个物品，分为 $k$ 种，每种物品各有 $n_1, n_2, \dots, n_k$ 个（且 $\sum n_i = n$），它们的全排列数为：
+    $$\frac{n!}{n_1! n_2! \dots n_k!}$$
+
+- **错排问题**
+
+    将 $1$ 到 $n$ 排成一列，要求数字 $i$ **不能**放在第 $i$ 个位置上的方案数。
+    1. **$O(n)$ 递推式**：
+    *边界条件：$D_1 = 0$, $D_2 = 1$*
+    $$D_n = (n-1)(D_{n-1} + D_{n-2})$$
+    2. **通项公式**：
+    $$D_n = n! \sum_{k=0}^n \frac{(-1)^k}{k!}$$
+
